@@ -1,10 +1,10 @@
 {
-  "name": "ts-utils",
+  "name": "@tellurian/ts-utils",
   "version": "1.0.0",
   "description": "A library of typescript utilities",
   "main": "index.ts",
   "repository": "git@github.com:ciprian-dragomir/ts-utils.git",
-  "author": "ciprian <ciprian.dragomir@icloud.com>",
+  "author": "Ciprian Dragomir <ciprian.dragomir@icloud.com>",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -13,12 +13,16 @@
     "build": "tsc"
   },
   "dependencies": {
-    "prettier": "^2.5.1",
     "typescript": "^4.5.4"
   },
   "devDependencies": {
+    "prettier": "^2.5.1",
     "@types/jest": "^27.4.0",
     "jest": "^27.4.6",
     "ts-jest": "^27.1.2"
-  }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
 }
