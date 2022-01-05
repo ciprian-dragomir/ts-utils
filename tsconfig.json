@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "module": "esnext",
+    "target": "es2015",
+    "declaration": true,
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "types": ["jest"],
+    "esModuleInterop": true
+  },
+  "include": ["index.ts"]
+}
