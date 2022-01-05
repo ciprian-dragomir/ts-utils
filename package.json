@@ -9,7 +9,8 @@
   "scripts": {
     "test": "jest",
     "watch": "jest --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
     "typescript": "^4.5.4"
