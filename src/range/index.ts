@@ -20,13 +20,13 @@ export type Range = {
  *
  * Usage:
  *  range(0, 3).map(i => `Item ${i})`) // ['Item 0', 'Item 1', 'Item 2']
- *  range(4, 2).map(`Item ${i})`) // ['Item 4', 'Item 3')
+ *  range(4, 2).map(`Item ${i})`) // ['Item 4', 'Item 3']
  *
  * Other methods can be added as necessary (e.g. fold)
  * @param start
  * @param end
  */
-export default (start: number, end: number): Range => ({
+export const range = (start: number, end: number): Range => ({
   map: <T>(fn: (e: number, index: number) => T): T[] => {
     const res: T[] = [];
     if (end < start) {

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es2015",
     "declaration": true,
     "outDir": "./dist",
@@ -9,5 +9,7 @@
     "types": ["jest"],
     "esModuleInterop": true
   },
-  "include": ["index.ts"]
+  "include": [
+    "src/index.ts"
+  ]
 }
