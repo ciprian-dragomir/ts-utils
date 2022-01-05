@@ -6,7 +6,6 @@
   "repository": "git@github.com:ciprian-dragomir/ts-utils.git",
   "author": "Ciprian Dragomir <ciprian.dragomir@icloud.com>",
   "license": "MIT",
-  "private": true,
   "scripts": {
     "test": "jest",
     "watch": "jest --watch",
