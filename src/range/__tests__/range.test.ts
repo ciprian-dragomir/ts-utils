@@ -1,6 +1,6 @@
-import range, { Range } from '../index';
+import { Range, range } from '../index';
 
-it('should map range values correctly', () => {
+it('maps range values correctly', () => {
   (
     [
       [range(-4, 2), [-4, -3, -2, -1, 0, 1]],
@@ -13,7 +13,7 @@ it('should map range values correctly', () => {
   });
 });
 
-it('should execute some function correctly', () => {
+it('executes "some" function correctly', () => {
   expect(range(-4, -2).some(i => i < 0)).toBe(true);
   expect(range(-4, -2).some(i => i >= -2)).toBe(false);
   expect(range(0, 0).some(() => false)).toBe(false);
@@ -25,11 +25,21 @@ it('should execute some function correctly', () => {
   expect(range(1, -2).some(i => i === -2)).toBe(false);
 });
 
-it('should execute forEach fn correctly', () => {
+it('executes "forEach" fn correctly', () => {
   const fn = jest.fn();
   range(0, 5).forEach(fn);
   expect(fn).toHaveBeenCalledTimes(5);
   for (let i = 0; i < 5; ++i) {
     expect(fn.mock.calls[i][0]).toBe(i);
   }
+});
+
+it('executes "find" fn correctly', () => {
+  expect(range(2, 5).find(i => i > 4)).toBeUndefined();
+  expect(range(5, 2).find(i => i < 2)).toBeUndefined();
+  expect(range(5, 2).find(i => i % 2 === 0)).toBe(4);
+  expect(range(2, 2).find(() => true)).toBe(undefined);
+  expect(range(2, 3).find(() => true)).toBe(2);
+  expect(range(2, 10).find((_, index) => index === 4)).toBe(6);
+  expect(range(2, 10).find((_, index) => index === 20)).toBeUndefined();
 });
