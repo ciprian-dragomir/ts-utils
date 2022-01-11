@@ -1,6 +1,6 @@
 {
   "name": "@tellurian/ts-utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A library of typescript utilities",
   "main": "dist/index.js",
   "repository": "git@github.com:ciprian-dragomir/ts-utils.git",
