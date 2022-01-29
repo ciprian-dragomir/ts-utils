@@ -1,9 +1,9 @@
 {
   "name": "@tellurian/ts-utils",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A library of typescript utilities",
   "main": "dist/index.js",
-  "repository": "git@github.com:ciprian-dragomir/ts-utils.git",
+  "repository": "https://github.com/ciprian-dragomir/ts-utils",
   "author": "Ciprian Dragomir <ciprian.dragomir@icloud.com>",
   "license": "MIT",
   "scripts": {
