@@ -18,3 +18,8 @@ export const maybe = <T>(a: T | null): Maybe<T> => a || undefined;
 export type Optional<T extends AnyObject, Q extends keyof T> = Omit<T, Q> & {
   [key in Q]+?: T[key];
 };
+
+export const equals =
+  <T>(a: T, isEqual: (x: T, y: T) => boolean = Object.is) =>
+  (b: T) =>
+    isEqual(a, b);
