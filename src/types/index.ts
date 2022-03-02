@@ -23,3 +23,8 @@ export const equals =
   <T>(a: T, isEqual: (x: T, y: T) => boolean = Object.is) =>
   (b: T) =>
     isEqual(a, b);
+
+export const not =
+  <T extends unknown[]>(predicate: (...args: T) => boolean) =>
+    (...args: T) =>
+      !predicate(...args);
