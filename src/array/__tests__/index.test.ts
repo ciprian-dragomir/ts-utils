@@ -62,8 +62,8 @@ describe('replaceItemAt', () => {
 describe('replaceItem', () => {
   it('returns the array if the item to replace is not found', () => {
     const arr = [1, 2, 3];
-    expect(replaceItemAt(arr, 5, 6)).toBe(arr);
-    expect(replaceItemAt<any>(arr, 'foo', true)).toBe(arr);
+    expect(replaceItem(arr, 5, 6)).toBe(arr);
+    expect(replaceItem<any>(arr, 'foo', true)).toBe(arr);
   });
 
   it('returns the array with first found item replaced', () => {
