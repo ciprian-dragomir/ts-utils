@@ -1,4 +1,4 @@
 export * from './types';
-export * from './splitArray';
+export * from './array';
 export * from './range';
 export * from './increment';
