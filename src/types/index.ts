@@ -26,5 +26,11 @@ export const equals =
 
 export const not =
   <T extends unknown[]>(predicate: (...args: T) => boolean) =>
-    (...args: T) =>
-      !predicate(...args);
+  (...args: T) =>
+    !predicate(...args);
+
+export const compose =
+  <T extends (...args: any[]) => any, P>(a: (arg: ReturnType<T>) => P, b: T) =>
+  (...args: Parameters<T>): P =>
+    a(b(...args));
+
