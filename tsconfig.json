@@ -7,7 +7,7 @@
     "outDir": "./dist",
     "moduleResolution": "node",
     "types": ["jest"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
   },
   "include": [
     "src/index.ts"
