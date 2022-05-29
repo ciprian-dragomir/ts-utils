@@ -1,10 +1,12 @@
 import localStorageFactory from '../index';
+import { AnyObject } from '../../types';
 
 describe('localStorageFactory', () => {
-  const mockStorage = () => ({
+  const mockStorage = (overrides?: AnyObject) => ({
     setItem: jest.fn(),
     getItem: jest.fn(),
     clear: jest.fn(),
+    ...overrides,
   });
 
   type T = {
@@ -23,7 +25,7 @@ describe('localStorageFactory', () => {
     const ls = localStorageFactory<T>({ storage });
     expect(storage.setItem).not.toHaveBeenCalled();
 
-    ls.setItem('foo', 'test');
+    expect(ls.setItem('foo', 'test')).toBe(true);
 
     expect(storage.setItem).toHaveBeenCalledTimes(1);
     expect(storage.setItem).toHaveBeenLastCalledWith('foo', '{"value":"test"}');
@@ -67,5 +69,107 @@ describe('localStorageFactory', () => {
     expect(storage.clear).not.toHaveBeenCalled();
     ls.clear();
     expect(storage.clear).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onError and returns false if setting an item fails', () => {
+    const error = new Error('Test error');
+    const storage = mockStorage({
+      setItem: () => {
+        throw error;
+      },
+    });
+    const onError = jest.fn();
+
+    const ls = localStorageFactory<T>({ storage, onError });
+    expect(ls.setItem('foo', 'test')).toBe(false);
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(onError).toHaveBeenLastCalledWith({
+      key: 'foo',
+      op: 'set',
+      value: 'test',
+      error,
+    });
+  });
+
+  it('calls onSpecificError and returns false if setting an item fails', () => {
+    const error = new Error('Test error');
+    const storage = mockStorage({
+      setItem: () => {
+        throw error;
+      },
+    });
+    const onError = jest.fn();
+
+    const ls = localStorageFactory<T>({ storage, onError });
+    const onSpecificError = jest.fn();
+    expect(ls.setItem('foo', 'test', onSpecificError)).toBe(false);
+    expect(onError).not.toHaveBeenCalled();
+    expect(onSpecificError).toHaveBeenCalledTimes(1);
+    expect(onSpecificError).toHaveBeenLastCalledWith({
+      key: 'foo',
+      op: 'set',
+      value: 'test',
+      error,
+    });
+  });
+
+  it('calls onError if getItem fails', () => {
+    const error = new Error('Test error');
+    const storage = mockStorage({
+      getItem: jest.fn(() => {
+        throw error;
+      }),
+    });
+
+    const onError = jest.fn();
+    const ls = localStorageFactory<T>({ storage, onError });
+    expect(storage.getItem).not.toHaveBeenCalled();
+
+    expect(ls.getItem('foo')).toBeUndefined();
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(storage.getItem).toHaveBeenLastCalledWith('foo');
+    expect(onError).toHaveBeenLastCalledWith({
+      key: 'foo',
+      op: 'get',
+      error,
+    });
+  });
+
+  it('calls migrate if provided and record is not found', () => {
+    const storage = mockStorage({
+      getItem: () => undefined,
+    });
+    const onComplete = jest.fn();
+    const migrate = jest.fn(() => ({ value: 123, onComplete }));
+    const ls = localStorageFactory<T>({
+      storage,
+      migrations: { bar: migrate },
+    });
+
+    expect(migrate).not.toHaveBeenCalled();
+    expect(onComplete).not.toHaveBeenCalled();
+    expect(storage.setItem).not.toHaveBeenCalled();
+    expect(ls.getItem('bar')).toBe(123);
+    expect(migrate).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(storage.setItem).toHaveBeenCalledTimes(1);
+    expect(storage.setItem).toHaveBeenLastCalledWith('bar', JSON.stringify({ value: 123 }));
+  });
+
+  it('does not call migrate if value exists', () => {
+    const storage = mockStorage({
+      getItem: (key: string) =>
+        key === 'foo' ? JSON.stringify({ value: 'test foo value' }) : undefined,
+    });
+    const onComplete = jest.fn();
+    const migrate = jest.fn(() => ({ value: 'migrate foo value', onComplete }));
+    const ls = localStorageFactory<T>({
+      storage,
+      migrations: { foo: migrate },
+    });
+
+    expect(ls.getItem('foo')).toBe('test foo value');
+    expect(migrate).not.toHaveBeenCalled();
+    expect(onComplete).not.toHaveBeenCalled();
   });
 });
