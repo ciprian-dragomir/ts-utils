@@ -4,11 +4,11 @@ export type LocalStorageError<T extends AnyObject, K extends keyof T> =
   { error: unknown } &
   (({
       key: K;
-    } & ({ op: 'set'; value: T[K] } | { op: 'get' }))
+    } & ({ op: 'set'; value: T[K] } | { op: 'get' | 'remove' }))
   | { op: 'clear' });
 
 export type LocalStorageFactoryParams<T extends AnyObject> = {
-  storage?: Pick<typeof window.localStorage, 'getItem' | 'setItem' | 'clear'>;
+  storage?: Pick<typeof window.localStorage, 'getItem' | 'setItem' | 'clear' | 'removeItem'>;
   onError?: <K extends keyof T = keyof T>(info: LocalStorageError<T, K>) => void;
   migrations?: Partial<{ [K in keyof T]: () => Maybe<{ value: T[K]; onComplete?: () => void }> }>;
 };
@@ -32,10 +32,11 @@ export type LocalStorage<T extends AnyObject> = {
     key: K,
     onErrorSpecific?: LocalStorageFactoryParams<T>['onError'],
   ) => Maybe<T[K]>;
+  removeItem: <K extends keyof T>(key: K, onErrorSpecific?: LocalStorageFactoryParams<T>['onError']) => void;
   clear: () => boolean;
 };
 
-export const localStorageFactory = <T extends AnyObject>(params?: LocalStorageFactoryParams<T>) => {
+export const localStorageFactory = <T extends AnyObject>(params?: LocalStorageFactoryParams<T>): LocalStorage<T> => {
   const { storage, onError, migrations } = { ...getDefaultParams<T>(), ...params };
   if (!storage) {
     throw Error('A valid "storage" must be specified.');
@@ -94,5 +95,17 @@ export const localStorageFactory = <T extends AnyObject>(params?: LocalStorageFa
     return false;
   };
 
-  return { setItem, getItem, getItemOrDefault, clear };
+  const removeItem: LocalStorage<T>['removeItem'] = (key, onErrorSpecific) => {
+    try {
+      storage.removeItem(key.toString());
+    } catch (error) {
+      (onErrorSpecific || onError)?.({
+        key,
+        op: 'remove',
+        error,
+      });
+    }
+  }
+
+  return { setItem, getItem, getItemOrDefault, clear, removeItem };
 };
