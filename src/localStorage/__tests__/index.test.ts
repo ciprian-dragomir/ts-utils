@@ -1,4 +1,4 @@
-import localStorageFactory from '../index';
+import { localStorageFactory } from '../index';
 import { AnyObject } from '../../types';
 
 describe('localStorageFactory', () => {
@@ -6,6 +6,7 @@ describe('localStorageFactory', () => {
     setItem: jest.fn(),
     getItem: jest.fn(),
     clear: jest.fn(),
+    removeItem: jest.fn(),
     ...overrides,
   });
 
