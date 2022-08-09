@@ -63,12 +63,12 @@ export const localStorageFactory = <T extends AnyObject>(params?: LocalStorageFa
       const k = key.toString();
       const item = storage.getItem(k);
       if (item) {
-        return JSON.parse(item).value || defaultReturn;
+        return JSON.parse(item).value;
       } else {
         const migration = migrations?.[k]?.();
         if (migration) {
           const { value, onComplete } = migration;
-          if (setItem(k, migration.value)) {
+          if (setItem(k, value)) {
             onComplete?.();
           }
           return value;

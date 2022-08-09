@@ -63,6 +63,27 @@ describe('localStorageFactory', () => {
     expect(value).toBe(123);
   });
 
+  it('getItemOrDefault returns undefined if record exists and value is undefined', () => {
+    const storage = mockStorage({ getItem: () => JSON.stringify({ value: undefined }) });
+    const ls = localStorageFactory<T>({ storage });
+    const value = ls.getItemOrDefault('foo', 'some value');
+    expect(value).toBeUndefined();
+  });
+
+  it('getItemOrDefault returns null if record exists and value is null', () => {
+    const storage = mockStorage({ getItem: () => JSON.stringify({ value: null }) });
+    const ls = localStorageFactory<T>({ storage });
+    const value = ls.getItemOrDefault('foo', 'some value');
+    expect(value).toBeNull();
+  });
+
+  it('getItemOrDefault returns default value if record does not exists', () => {
+    const storage = mockStorage({ getItem: () => undefined });
+    const ls = localStorageFactory<T>({ storage });
+    const value = ls.getItemOrDefault('foo', 'some value');
+    expect(value).toBe('some value');
+  });
+
   it('calls storage.clear on clear', () => {
     const storage = mockStorage();
 
