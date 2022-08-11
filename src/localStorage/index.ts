@@ -19,11 +19,18 @@ const getDefaultParams = <T extends AnyObject>(): Partial<LocalStorageFactoryPar
 
 export type FindItemResult<K, V> = {
   key: K;
-  hasRecord: boolean;
-  hasValue: boolean;
-  value?: V;
-  error?: unknown;
-};
+} & (
+  | {
+      hasRecord: boolean;
+      hasValue: false;
+      error?: unknown;
+    }
+  | {
+      hasRecord: true;
+      hasValue: true;
+      value: V;
+    }
+);
 
 export type LocalStorage<T extends AnyObject> = {
   setItem: <K extends keyof T>(
@@ -122,7 +129,7 @@ export const localStorageFactory = <T extends AnyObject>(
   };
 
   const findItem: LocalStorage<T>['findItem'] = key => {
-    const result = { key, hasRecord: false, hasValue: false };
+    const result = { key, hasRecord: false, hasValue: false } as const;
     try {
       const k = key.toString();
       const item = storage.getItem(k);
@@ -136,7 +143,7 @@ export const localStorageFactory = <T extends AnyObject>(
             value: container.value,
           };
         } else {
-          return { ...result, hasValue: false };
+          return { ...result, hasRecord: true };
         }
       }
     } catch (error) {
