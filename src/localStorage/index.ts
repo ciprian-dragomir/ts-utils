@@ -1,11 +1,11 @@
 import { AnyObject, Maybe } from '../types';
 
-export type LocalStorageError<T extends AnyObject, K extends keyof T> =
-  { error: unknown } &
-  (({
+export type LocalStorageError<T extends AnyObject, K extends keyof T> = { error: unknown } & (
+  | ({
       key: K;
     } & ({ op: 'set'; value: T[K] } | { op: 'get' | 'remove' }))
-  | { op: 'clear' });
+  | { op: 'clear' }
+);
 
 export type LocalStorageFactoryParams<T extends AnyObject> = {
   storage?: Pick<typeof window.localStorage, 'getItem' | 'setItem' | 'clear' | 'removeItem'>;
@@ -16,6 +16,14 @@ export type LocalStorageFactoryParams<T extends AnyObject> = {
 const getDefaultParams = <T extends AnyObject>(): Partial<LocalStorageFactoryParams<T>> => ({
   storage: globalThis?.localStorage,
 });
+
+export type FindItemResult<K, V> = {
+  key: K;
+  hasRecord: boolean;
+  hasValue: boolean;
+  value?: V;
+  error?: unknown;
+};
 
 export type LocalStorage<T extends AnyObject> = {
   setItem: <K extends keyof T>(
@@ -32,11 +40,17 @@ export type LocalStorage<T extends AnyObject> = {
     key: K,
     onErrorSpecific?: LocalStorageFactoryParams<T>['onError'],
   ) => Maybe<T[K]>;
-  removeItem: <K extends keyof T>(key: K, onErrorSpecific?: LocalStorageFactoryParams<T>['onError']) => void;
+  removeItem: <K extends keyof T>(
+    key: K,
+    onErrorSpecific?: LocalStorageFactoryParams<T>['onError'],
+  ) => void;
+  findItem: <K extends keyof T, P = T[K]>(key: K) => FindItemResult<K, P>;
   clear: () => boolean;
 };
 
-export const localStorageFactory = <T extends AnyObject>(params?: LocalStorageFactoryParams<T>): LocalStorage<T> => {
+export const localStorageFactory = <T extends AnyObject>(
+  params?: LocalStorageFactoryParams<T>,
+): LocalStorage<T> => {
   const { storage, onError, migrations } = { ...getDefaultParams<T>(), ...params };
   if (!storage) {
     throw Error('A valid "storage" must be specified.');
@@ -105,7 +119,32 @@ export const localStorageFactory = <T extends AnyObject>(params?: LocalStorageFa
         error,
       });
     }
-  }
+  };
 
-  return { setItem, getItem, getItemOrDefault, clear, removeItem };
+  const findItem: LocalStorage<T>['findItem'] = key => {
+    const result = { key, hasRecord: false, hasValue: false };
+    try {
+      const k = key.toString();
+      const item = storage.getItem(k);
+      if (item) {
+        const container = JSON.parse(item);
+        if (container && typeof container === 'object' && container.hasOwnProperty('value')) {
+          return {
+            key,
+            hasRecord: true,
+            hasValue: true,
+            value: container.value,
+          };
+        } else {
+          return { ...result, hasValue: false };
+        }
+      }
+    } catch (error) {
+      return { ...result, error };
+    }
+
+    return result;
+  };
+
+  return { setItem, getItem, getItemOrDefault, clear, removeItem, findItem };
 };
