@@ -13,7 +13,7 @@ export const flatMap = <T, P>(a: Maybe<T>, b: (c: T) => Maybe<P>): Maybe<P> =>
  * Convert a nullable value to a Maybe monad (null is translated to undefined).
  * @param a
  */
-export const maybe = <T>(a: T | null): Maybe<T> => a || undefined;
+export const maybe = <T>(a: T | null): Maybe<T> => a === null ? undefined : a;
 
 export type Optional<T extends AnyObject, Q extends keyof T> = Omit<T, Q> & {
   [key in Q]+?: T[key];
