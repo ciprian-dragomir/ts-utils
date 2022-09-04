@@ -43,3 +43,35 @@ it('executes "find" fn correctly', () => {
   expect(range(2, 10).find((_, index) => index === 4)).toBe(6);
   expect(range(2, 10).find((_, index) => index === 20)).toBeUndefined();
 });
+
+it('executes the iterator correctly', () => {
+  let result = [];
+  for (const i of range(2, 5)) {
+    result.push(i);
+  }
+  expect(result).toEqual([2, 3, 4]);
+
+  result = [];
+  for (const i of range(5, 2)) {
+    result.push(i);
+  }
+  expect(result).toEqual([5, 4, 3]);
+
+  result = [];
+  for (const i of range(3, 3)) {
+    result.push(i);
+  }
+  expect(result).toEqual([]);
+
+  result = [];
+  for (const i of range(-3, 1)) {
+    result.push(i);
+  }
+  expect(result).toEqual([-3, -2, -1, 0]);
+
+  result = [];
+  for (const i of range(2, -3)) {
+    result.push(i);
+  }
+  expect(result).toEqual([2, 1, 0, -1, -2]);
+});

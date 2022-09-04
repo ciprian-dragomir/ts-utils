@@ -6,7 +6,7 @@ export type Range = {
   forEach: (fn: (e: number, index: number) => void) => void;
   random: (generator?: () => number) => number;
   find: (fn: (e: number, index: number) => boolean) => Maybe<number>;
-};
+} & Iterable<number>;
 
 /**
  * Introduce a range struct which allows "mapping" over the integer value in its (right open) interval.
@@ -93,5 +93,23 @@ export const range = (start: number, end: number): Range => ({
     }
 
     return undefined;
+  },
+  [Symbol.iterator]: () => {
+    let n = start;
+    if (end < start) {
+      return {
+        next: () => {
+          const done = n <= end;
+          return { value: done ? n : n--, done };
+        },
+      };
+    } else {
+      return {
+        next: () => {
+          const done = n >= end;
+          return { value: done ? n : n++, done };
+        },
+      };
+    }
   },
 });
