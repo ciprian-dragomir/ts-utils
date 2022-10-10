@@ -9,10 +9,7 @@ type SplitResult<T> = [T[], T[]];
  * @param arr
  * @param predicate
  */
-export const split = <T>(
-  arr: T[],
-  predicate: (e: T, index: number) => boolean,
-): SplitResult<T> => {
+export const split = <T>(arr: T[], predicate: (e: T, index: number) => boolean): SplitResult<T> => {
   return arr.reduce<SplitResult<T>>(
     (acc, e, index) => {
       const [a1, a2] = acc;
@@ -66,3 +63,21 @@ export const replaceItem = <T>(
   replacementItem: T,
   eq: (item1: T, item2: T) => boolean = Object.is,
 ): T[] => replaceFirst(arr, item => eq(item, itemToReplace), replacementItem);
+
+export const arrayEquals = <T>(
+  arr1: T[],
+  arr2: T[],
+  eq: (e1: T, e2: T) => boolean = Object.is,
+): boolean => {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < arr1.length; ++i) {
+    if (!eq(arr1[i], arr2[i])) {
+      return false;
+    }
+  }
+
+  return true;
+};

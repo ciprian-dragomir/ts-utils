@@ -1,4 +1,4 @@
-import { replaceAll, replaceItem, replaceItemAt, split } from '../index';
+import { arrayEquals, replaceAll, replaceItem, replaceItemAt, split } from '../index';
 
 describe('split', () => {
   it('should return two empty arrays', () => {
@@ -100,5 +100,21 @@ describe('replaceAll', () => {
     expect(nextArray).toEqual([1, -1, 3]);
     expect(replaceAll(arr, () => true, -1)).toEqual([-1, -1, -1]);
     expect(replaceAll(['foo', 'bar'], e => e.startsWith('f'), 'abc')).toEqual(['abc', 'bar']);
+  });
+});
+
+describe('arrayEquals', () => {
+  it('should work as expected', () => {
+    expect(arrayEquals([], [])).toBe(true);
+    expect(arrayEquals([1], [1, 2])).toBe(false);
+    expect(arrayEquals([1, 2], [1])).toBe(false);
+    expect(arrayEquals([1, '2'], [1, 2])).toBe(false);
+    expect(arrayEquals([1, '2'], [1, 2], () => true)).toBe(true);
+    expect(arrayEquals([1, 3, 2], [1, 2, 3])).toBe(false);
+    const o = { a: 'foo' };
+    expect(arrayEquals(['1', 2, null, undefined, NaN, o], ['1', 2, null, undefined, NaN, o])).toBe(
+      true,
+    );
+    expect(arrayEquals([o], [{ a: 'foo' }])).toBe(false);
   });
 });
